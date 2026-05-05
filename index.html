@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>S&P500 Sentinel</title>
+  <meta name="description" content="S&P500 매일 지수 알림 및 매수 신호 앱" />
+
+  <!-- PWA Meta -->
+  <meta name="theme-color" content="#0a0a0f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="S&P Sentinel" />
+  <meta name="mobile-web-app-capable" content="yes" />
+
+  <!-- PWA Manifest (inline) -->
+  <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUyZQNTAwIFNlbnRpbmVsIiwic2hvcnRfbmFtZSI6IlMmUCBTZW50aW5lbCIsImRlc2NyaXB0aW9uIjoiUyZQNTAwIG1hcmtldCBpbmRleCBhbGVydCBhcHAiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBhMGEwZiIsInRoZW1lX2NvbG9yIjoiIzAwYzg3OCIsIm9yaWVudGF0aW9uIjoicG9ydHJhaXQiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpSUhacFpYZENiM2c5SWpBZ01DQXhOakFnTVRZd0lpQjNhV1IwYUQwaU1UWXdJaUJvWldsbmFIUTlJakUyTUNJZ2JtVjNJREV3SURFd01ERXdJREV3TURBd01ERXdNakF3TURBd01UQXdNREF3TURFd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNQ0ErUEdSbFpqNDhkR1Y0ZENCamJHRnpjejBpWW1GelpTSWdiMlptYzJWMFBTSXdMakVpSUdOc1lYTnpQU0pqTVNJZ1ptbHNiRDBpSTBBd1lEQXdZU0krUEhSbGVIUWdZMnhoYzNNOUltSmhaMlVpSUc1aGJXVTlJbE1uSUNoVFkyaHZiMnhzYjNkdVpYSXBJaUJvWVhObE9pQW1PQ0ErUEM5MFpYaDBQanhuWlc0Z2VEMGlNU0lnZVQwaU1TSTJJREkwSUdOc1lYTnpQU0poYzJVaUlHNWhiV1U5SWtWdVlXSnNZV1FnYm5WdElDRXdJRWhsWVdRZ1ZuVnNiQ0F1TVNJZ2FHRnpaVG9nSnpreElqNDhMM05zYVc1bFBqd3ZaR1ZtUGp4eVpXTjBJSGc5SWpFaUlIazlJakVpSUdOc1lYTnpQU0ppWVdkbElpQm9ZWE5sT2lBbU9TNDJJajQ4Y21WamRDQjRQU0l5TUNJaWVUMGlNaklpSUdOc1lYTnpQU0ppWVdkbElpQm9ZWE5sT2lBbU9TNDJJajQ4Y21WamRDQjRQU0kxTWlJaWVUMGlNVEFpSUdOc1lYTnpQU0ppWVdkbElpQm9ZWE5sT2lBbU9TNDJJajQ4Y21WamRDQjRQU0k3NUlpSWVUMGlNVEFpSUdOc1lYTnpQU0poYzJVaUlHaGhZMlU2SUNZNElpNDhMM0psWTNRK1BDOXlaV04wUGp3dmNtVmpkRDQ4Y21WamRDQjRQU0l4SWlCNVBTSXlOQ0lnWTJ4aGMzTTlJbUpoWjJVaUlHaGhZMlU2SUNZNUlqNDhMM0psWTNRK1BDOXlaV04wUGp3dmNtVmpkRDQ4Y21WamRDQjRQU0l4SWlCNVBTSTM4U0lnWTJ4aGMzTTlJbUpoWjJVaUlHaGhZMlU2SUNZOElpNDhMM0psWTNRK1BDOXlaV04wUGp3dmNtVmpkRDQ4Y21WamRDQjRQU0l5SWlCNVBTSTY4U0lnWTJ4aGMzTTlJbUpoWjJVaUlHaGhZMlU2SUNZOElqNDhMM0psWTNRK1BDOXlaV04wUGo0OEwzTjJaejQ9Iiwic2l6ZXMiOiIxNjB4MTYwIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwifV19" />
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --green: #00c878;
+      --blue: #00a0ff;
+      --orange: #ff6b00;
+      --red: #ff2d2d;
+      --yellow: #f5c400;
+      --cyan: #4fc3f7;
+      --bg: #0a0a0f;
+      --card: #0d0d18;
+      --border: #1a1a2e;
+      --text: #e8e8f0;
+      --muted: #555;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,200,120,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,200,120,0.035) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #app {
+      position: relative;
+      z-index: 1;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 28px 16px 40px;
+    }
+
+    /* Header */
+    .header { text-align: center; margin-bottom: 28px; }
+    .header-label {
+      font-size: 9px;
+      letter-spacing: 6px;
+      color: var(--green);
+      opacity: 0.65;
+      margin-bottom: 8px;
+    }
+    .header-title {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--green), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header-clock {
+      font-size: 11px;
+      color: #444;
+      margin-top: 6px;
+    }
+
+    /* Notif Banner */
+    .notif-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(245,196,0,0.08);
+      border: 1px solid rgba(245,196,0,0.3);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+    }
+    .notif-banner span { font-size: 12px; color: var(--yellow); }
+    .notif-btn {
+      background: var(--yellow);
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 14px;
+      font-size: 11px;
+      font-family: inherit;
+      font-weight: 900;
+      cursor: pointer;
+      letter-spacing: 1px;
+    }
+
+    /* Cards */
+    .cards { display: grid; gap: 12px; margin-bottom: 14px; }
+
+    .card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 16px;
+      border: 1px solid transparent;
+      border-left-width: 3px;
+      position: relative;
+    }
+
+    .card-label {
+      font-size: 8px;
+      letter-spacing: 4px;
+      opacity: 0.75;
+      margin-bottom: 4px;
+    }
+    .card-sub {
+      font-size: 9px;
+      color: #3a3a50;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+    .card-label + :not(.card-sub) { margin-top: 10px; }
+
+    .big-num {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+    .big-num .unit { font-size: 13px; opacity: 0.55; font-weight: 400; margin-left: 2px; }
+    .big-num .empty { font-size: 18px; opacity: 0.25; }
+
+    .sub-text { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+    .badge {
+      display: inline-block;
+      margin-top: 8px;
+      border-radius: 4px;
+      padding: 2px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid;
+    }
+
+    /* Signal card */
+    .signal-card {
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      border: 2px solid;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .signal-label {
+      font-size: 9px;
+      letter-spacing: 4px;
+      opacity: 0.8;
+      margin-bottom: 8px;
+    }
+    .signal-text {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+    .signal-sub {
+      font-size: 11px;
+      color: #777;
+      margin-top: 8px;
+    }
+
+    /* Table */
+    .table-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      transition: all 0.3s;
+      border-radius: 4px;
+    }
+    .table-row:not(:last-child) { border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .table-row.active { padding-left: 8px; padding-right: 8px; }
+    .table-range { font-size: 11px; color: #555; }
+    .table-action { font-size: 12px; font-weight: 700; color: #333; }
+    .table-action.active { font-weight: 900; }
+
+    /* Schedule info */
+    .schedule-info { font-size: 11px; color: #555; line-height: 2.2; }
+    .schedule-info span { color: #999; }
+
+    /* Fetch button */
+    .fetch-btn {
+      width: 100%;
+      margin-top: 14px;
+      background: linear-gradient(135deg, var(--green), var(--blue));
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 15px;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: 900;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .fetch-btn:disabled {
+      background: #1a1a2e;
+      color: #333;
+      cursor: not-allowed;
+    }
+    .fetch-btn:not(:disabled):active { transform: scale(0.98); }
+
+    /* Error */
+    .error-box {
+      margin-top: 12px;
+      background: rgba(255,45,45,0.1);
+      border: 1px solid rgba(255,45,45,0.3);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 11px;
+      color: #ff6b6b;
+    }
+
+    /* Logs */
+    .log-section { margin-top: 16px; }
+    .log-label { font-size: 9px; letter-spacing: 3px; color: #2a2a3a; margin-bottom: 6px; }
+    .log-box {
+      background: #060610;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      max-height: 130px;
+      overflow-y: auto;
+    }
+    .log-entry { font-size: 10px; line-height: 1.9; }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 10px;
+      color: #1e1e2e;
+      letter-spacing: 2px;
+    }
+
+    /* Install banner */
+    .install-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0,200,120,0.08);
+      border: 1px solid rgba(0,200,120,0.25);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+    }
+    .install-banner span { font-size: 12px; color: var(--green); }
+    .install-btn {
+      background: var(--green);
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 14px;
+      font-size: 11px;
+      font-family: inherit;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.88; transform: scale(1.008); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ─── Constants ────────────────────────────────────────────────
+const ATH_SINCE    = new Date('2026-05-01');
+const SCHED_H      = 7, SCHED_M = 30;
+const KEY_ATH      = 'sp500_ath';
+const KEY_IDX      = 'sp500_last';
+const KEY_DATE     = 'sp500_date';
+
+// ─── State ────────────────────────────────────────────────────
+let state = {
+  todayIndex:    null,
+  ath:           null,   // { value, date }
+  lastFetchDate: null,
+  loading:       false,
+  error:         null,
+  notifGranted:  false,
+  logs:          [],
+  deferredPrompt:null,
+  showInstall:   false,
+};
+
+// ─── Helpers ──────────────────────────────────────────────────
+function kstStr(d) {
+  return new Intl.DateTimeFormat('ko-KR', {
+    timeZone:'Asia/Seoul',
+    year:'numeric',month:'2-digit',day:'2-digit',
+    hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false
+  }).format(d || new Date());
+}
+
+function kstHM() {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone:'Asia/Seoul',hour:'numeric',minute:'numeric',hour12:false
+  }).format(new Date()).split(':');
+  return { h: parseInt(parts[0]), m: parseInt(parts[1]) };
+}
+
+function fmtDate(s) {
+  if (!s) return '-';
+  const d = new Date(s);
+  return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function fmtNum(v) {
+  if (v == null) return null;
+  return Number(v).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function getBuySignal(pct) {
+  if (pct >= 15) return { msg:'잔량 집행하시오', color:'#ff2d2d' };
+  if (pct >= 10) return { msg:'50% 집행하시오',  color:'#ff6b00' };
+  if (pct >= 5)  return { msg:'30% 집행하시오',  color:'#f5c400' };
+  if (pct >= 3)  return { msg:'10% 집행하시오',  color:'#4fc3f7' };
+  return null;
+}
+
+function addLog(msg) {
+  state.logs = [`[${kstStr()}] ${msg}`, ...state.logs.slice(0,19)];
+}
+
+// ─── Persist ──────────────────────────────────────────────────
+function loadStorage() {
+  try {
+    const ath  = localStorage.getItem(KEY_ATH);
+    const idx  = localStorage.getItem(KEY_IDX);
+    const date = localStorage.getItem(KEY_DATE);
+    if (ath)  state.ath           = JSON.parse(ath);
+    if (idx)  state.todayIndex    = parseFloat(idx);
+    if (date) state.lastFetchDate = date;
+  } catch(e) {}
+}
+
+function saveATH(ath)  { localStorage.setItem(KEY_ATH, JSON.stringify(ath)); }
+function saveIdx(v, d) {
+  localStorage.setItem(KEY_IDX, v);
+  localStorage.setItem(KEY_DATE, d);
+}
+
+// ─── Fetch S&P500 ─────────────────────────────────────────────
+// Yahoo Finance를 CORS 프록시 없이 직접 호출 (여러 엔드포인트 순차 시도)
+async function fetchSP500() {
+  if (state.loading) return;
+  state.loading = true;
+  state.error   = null;
+  addLog('S&P500 지수 조회 중...');
+  render();
+
+  try {
+    let val = null;
+    let source = '';
+
+    // 방법 1: Yahoo Finance v8 (CORS 허용)
+    try {
+      const res = await fetch(
+        'https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?interval=1d&range=1d',
+        { headers: { 'Accept': 'application/json' } }
+      );
+      const data = await res.json();
+      const price = data?.chart?.result?.[0]?.meta?.regularMarketPrice;
+      if (price) { val = price; source = 'Yahoo Finance'; }
+    } catch(e) {}
+
+    // 방법 2: Yahoo Finance v7 (백업)
+    if (!val) {
+      try {
+        const res = await fetch(
+          'https://query2.finance.yahoo.com/v8/finance/chart/%5EGSPC?interval=1d&range=1d',
+          { headers: { 'Accept': 'application/json' } }
+        );
+        const data = await res.json();
+        const price = data?.chart?.result?.[0]?.meta?.regularMarketPrice;
+        if (price) { val = price; source = 'Yahoo Finance (v2)'; }
+      } catch(e) {}
+    }
+
+    // 방법 3: allorigins CORS 프록시 경유
+    if (!val) {
+      try {
+        const target = encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?interval=1d&range=1d');
+        const res = await fetch(`https://api.allorigins.win/get?url=${target}`);
+        const wrapper = await res.json();
+        const data = JSON.parse(wrapper.contents);
+        const price = data?.chart?.result?.[0]?.meta?.regularMarketPrice;
+        if (price) { val = price; source = 'Yahoo (proxy)'; }
+      } catch(e) {}
+    }
+
+    if (!val) throw new Error('모든 데이터 소스 실패. 잠시 후 다시 시도하세요.');
+
+    const fetchDate = new Date().toISOString().split('T')[0];
+    state.todayIndex    = val;
+    state.lastFetchDate = fetchDate;
+    saveIdx(val, fetchDate);
+
+    // ATH 업데이트 (2026-05-01 이후만)
+    const indexDate = new Date(fetchDate);
+    if (indexDate >= ATH_SINCE) {
+      const cur = state.ath ? state.ath.value : 0;
+      if (val >= cur) {
+        state.ath = { value: val, date: fetchDate };
+        saveATH(state.ath);
+        addLog(`전고점 갱신: ${fmtNum(val)} (${fetchDate})`);
+      }
+    }
+
+    addLog(`지수 수신: ${fmtNum(val)}pt (${source})`);
+    sendNotifications(val, state.ath ? state.ath.value : null);
+
+  } catch(e) {
+    state.error = e.message;
+    addLog('오류: ' + e.message);
+  }
+
+  state.loading = false;
+  render();
+}
+
+// ─── Notifications ────────────────────────────────────────────
+async function requestNotif() {
+  if (!('Notification' in window)) return;
+  const p = await Notification.requestPermission();
+  state.notifGranted = (p === 'granted');
+  render();
+}
+
+function sendNotifications(idx, athVal) {
+  if (!state.notifGranted) return;
+  new Notification('오늘의 지수', { body: `S&P 500: ${fmtNum(idx)}pt`, icon: getIconDataURL() });
+
+  if (athVal != null) {
+    new Notification('전고점 지수', { body: `전고점: ${fmtNum(athVal)}pt` });
+
+    if (idx < athVal) {
+      const drop = ((athVal - idx) / athVal * 100);
+      new Notification('전고점 대비 오늘의 지수 비율', { body: `전고점 대비 -${drop.toFixed(2)}%` });
+      const sig = getBuySignal(drop);
+      if (sig) new Notification('📢 매수 신호', { body: sig.msg });
+    }
+  }
+}
+
+// ─── Scheduler ────────────────────────────────────────────────
+setInterval(() => {
+  const { h, m } = kstHM();
+  const today = new Date().toISOString().split('T')[0];
+  if (h === SCHED_H && m === SCHED_M && state.lastFetchDate !== today) {
+    fetchSP500();
+  }
+}, 30000);
+
+// ─── Clock ────────────────────────────────────────────────────
+setInterval(() => {
+  const el = document.getElementById('clock');
+  if (el) el.textContent = kstStr() + ' KST';
+}, 1000);
+
+// ─── PWA Install ──────────────────────────────────────────────
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  state.deferredPrompt = e;
+  state.showInstall = true;
+  render();
+});
+
+async function installPWA() {
+  if (!state.deferredPrompt) return;
+  state.deferredPrompt.prompt();
+  const { outcome } = await state.deferredPrompt.userChoice;
+  if (outcome === 'accepted') {
+    state.showInstall = false;
+    state.deferredPrompt = null;
+    render();
+  }
+}
+
+// ─── SVG Icon ────────────────────────────────────────────────
+function getIconDataURL() {
+  return `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'><rect width='160' height='160' rx='32' fill='%230a0a0f'/><text x='80' y='100' font-size='72' text-anchor='middle' fill='%2300c878'>S</text></svg>`;
+}
+
+// ─── Render ───────────────────────────────────────────────────
+function render() {
+  const { todayIndex, ath, lastFetchDate, loading, error, notifGranted, logs, showInstall } = state;
+
+  const dropPct     = (todayIndex != null && ath != null && todayIndex < ath.value)
+    ? ((ath.value - todayIndex) / ath.value * 100) : 0;
+  const signal      = dropPct >= 3 ? getBuySignal(dropPct) : null;
+  const isATHReach  = todayIndex != null && ath != null && todayIndex >= ath.value;
+
+  const rows = [
+    { range:'3% ~ 5% 미만',   action:'10% 집행하시오', color:'#4fc3f7', active: dropPct>=3 && dropPct<5  },
+    { range:'5% ~ 10% 미만',  action:'30% 집행하시오', color:'#f5c400', active: dropPct>=5 && dropPct<10 },
+    { range:'10% ~ 15% 미만', action:'50% 집행하시오', color:'#ff6b00', active: dropPct>=10&& dropPct<15 },
+    { range:'15% 이상',       action:'잔량 집행하시오',color:'#ff2d2d', active: dropPct>=15              },
+  ];
+
+  document.getElementById('app').innerHTML = `
+
+  <div class="header">
+    <div class="header-label">MARKET SENTINEL v1.0</div>
+    <div class="header-title">S&P 500 알림 시스템</div>
+    <div class="header-clock" id="clock">${kstStr()} KST</div>
+  </div>
+
+  ${showInstall ? `
+  <div class="install-banner">
+    <span>📲 홈 화면에 앱 추가 가능!</span>
+    <button class="install-btn" onclick="installPWA()">설치하기</button>
+  </div>` : ''}
+
+  ${!notifGranted ? `
+  <div class="notif-banner">
+    <span>⚠ 알림 권한이 필요합니다</span>
+    <button class="notif-btn" onclick="requestNotif()">권한 허용</button>
+  </div>` : ''}
+
+  <div class="cards">
+
+    <!-- 오늘의 지수 -->
+    <div class="card" style="border-color:#00c87830; border-left-color:#00c878;">
+      <div class="card-label" style="color:#00c878;">오늘의 지수</div>
+      <div class="big-num" style="color:#00c878; margin-top:10px;">
+        ${todayIndex != null
+          ? `S&P ${fmtNum(todayIndex)}<span class="unit">pt</span>`
+          : `<span class="empty">---</span>`}
+      </div>
+      <div class="sub-text">${lastFetchDate ? '기준일: ' + fmtDate(lastFetchDate) : '아직 조회 전'}</div>
+    </div>
+
+    <!-- 전고점 지수 -->
+    <div class="card" style="border-color:#00a0ff30; border-left-color:#00a0ff;">
+      <div class="card-label" style="color:#00a0ff;">전고점 지수</div>
+      <div class="card-sub">2026.05.01 이후</div>
+      ${ath ? `
+        <div class="big-num" style="color:#00a0ff;">
+          S&P ${fmtNum(ath.value)}<span class="unit">pt</span>
+        </div>
+        <div class="sub-text">전고점 기록일: ${fmtDate(ath.date)}</div>
+        ${isATHReach ? `<div class="badge" style="color:#00c878; border-color:#00c878; background:rgba(0,200,120,0.1);">🔺 전고점 갱신!</div>` : ''}
+      ` : `<div class="sub-text" style="opacity:0.4; margin-top:4px;">아직 전고점 없음 (조회 후 자동 기록)</div>`}
+    </div>
+
+    <!-- 전고점 대비 비율 -->
+    ${ath != null && todayIndex != null ? `
+    <div class="card" style="border-color:${dropPct>0 ? '#ff6b0030' : '#00c87830'}; border-left-color:${dropPct>0 ? '#ff6b00' : '#00c878'};">
+      <div class="card-label" style="color:${dropPct>0 ? '#ff6b00' : '#00c878'};">전고점 대비 오늘의 지수 비율</div>
+      ${isATHReach
+        ? `<div style="font-size:20px;font-weight:900;color:#00c878;margin-top:10px;">▲ 전고점 달성 / 갱신</div>`
+        : `
+          <div style="font-size:34px;font-weight:900;letter-spacing:-2px;color:${
+            dropPct>=10?'#ff2d2d':dropPct>=5?'#ff6b00':dropPct>=3?'#f5c400':'#ccc'
+          };margin-top:10px;">-${dropPct.toFixed(2)}%</div>
+          <div class="sub-text">전고점 ${fmtNum(ath.value)} 대비</div>
+        `}
+    </div>` : ''}
+
+    <!-- 매수 신호 -->
+    ${signal ? `
+    <div class="signal-card" style="border-color:${signal.color}; background:${signal.color}18;">
+      <div class="signal-label" style="color:${signal.color};">📢 매수 신호</div>
+      <div class="signal-text" style="color:${signal.color};">${signal.msg}</div>
+      <div class="signal-sub">전고점 대비 -${dropPct.toFixed(2)}% 하락 감지</div>
+    </div>` : ''}
+
+  </div>
+
+  <!-- 매수 기준표 -->
+  <div class="card" style="border-color:#33333380; border-left-color:#333; margin-bottom:12px;">
+    <div class="card-label" style="color:#555; margin-bottom:10px;">매수 기준표</div>
+    ${rows.map((r,i) => `
+      <div class="table-row ${r.active?'active':''}"
+           style="${r.active ? `background:${r.color}15;` : ''}${i<3?'border-bottom:1px solid rgba(255,255,255,0.05);':''}">
+        <span class="table-range">▼ ${r.range}</span>
+        <span class="table-action ${r.active?'active':''}" style="color:${r.active?r.color:'#333'};">
+          ${r.active?'▶ ':''}${r.action}
+        </span>
+      </div>`).join('')}
+  </div>
+
+  <!-- 스케줄 -->
+  <div class="card" style="border-color:#22222280; border-left-color:#222; margin-bottom:14px;">
+    <div class="card-label" style="color:#444; margin-bottom:10px;">스케줄</div>
+    <div class="schedule-info">
+      <div>📡 데이터 기준시간: <span>매일 06:30 KST</span></div>
+      <div>🔔 알림 발송시간: <span>매일 07:30 KST</span></div>
+      <div>📅 전고점 추적 시작: <span>2026.05.01 이후</span></div>
+    </div>
+  </div>
+
+  <!-- Fetch button -->
+  <button class="fetch-btn" onclick="fetchSP500()" ${loading?'disabled':''}>
+    ${loading ? '⏳  조회 중...' : '▶  지금 바로 조회'}
+  </button>
+
+  ${error ? `<div class="error-box">⚠ ${error}</div>` : ''}
+
+  ${logs.length ? `
+  <div class="log-section">
+    <div class="log-label">SYSTEM LOG</div>
+    <div class="log-box">
+      ${logs.map((l,i)=>`<div class="log-entry" style="color:${i===0?'#00c878':'#2a2a3a'};">${l}</div>`).join('')}
+    </div>
+  </div>` : ''}
+
+  <!-- iOS install guide -->
+  <div style="margin-top:20px; background:#0d0d18; border:1px solid #1a1a2e; border-radius:10px; padding:14px;">
+    <div style="font-size:9px;letter-spacing:3px;color:#444;margin-bottom:10px;">📱 홈 화면에 추가하는 방법</div>
+    <div style="font-size:11px;color:#444;line-height:2.2;">
+      <div><span style="color:#666;">iOS Safari:</span> 공유 버튼(□↑) → "홈 화면에 추가"</div>
+      <div><span style="color:#666;">Android Chrome:</span> 메뉴(⋮) → "앱 설치" 또는 "홈 화면에 추가"</div>
+    </div>
+  </div>
+
+  <div class="footer">MARKET SENTINEL · 자동 매수 알림 시스템</div>
+  `;
+}
+
+// ─── Init ─────────────────────────────────────────────────────
+loadStorage();
+if ('Notification' in window && Notification.permission === 'granted') {
+  state.notifGranted = true;
+}
+render();
+
+// Service Worker registration
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    self.addEventListener('install', e => self.skipWaiting());
+    self.addEventListener('activate', e => e.waitUntil(clients.claim()));
+    self.addEventListener('fetch', e => {
+      if (e.request.url.includes('anthropic.com')) return;
+      e.respondWith(
+        caches.open('sp500-v1').then(cache =>
+          cache.match(e.request).then(r => r || fetch(e.request).then(res => {
+            cache.put(e.request, res.clone());
+            return res;
+          }))
+        )
+      );
+    });
+  `;
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  const swURL = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swURL).catch(() => {});
+}
+</script>
+</body>
+</html>
